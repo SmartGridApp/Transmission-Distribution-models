@@ -202,7 +202,7 @@ It contains the following components:
 
   model Submodel3ph "3 phase model having three PV sources feeding to a 3 phase dynamic load having one faulty line"
     extends Modelica.Icons.Example;
-    inner PowerSystems.System system(fType = PowerSystems.Types.SystemFrequency.Average) annotation(
+    inner PowerSystems.System system(dynType = PowerSystems.Types.Dynamics.FreeInitial)  annotation(
       Placement(visible = true, transformation(extent = {{-160, 100}, {-140, 120}}, rotation = 0)));
     PowerSystems.AC3ph.Nodes.BusBar bus1 annotation(
       Placement(visible = true, transformation(extent = {{-172, -20}, {-152, 0}}, rotation = 0)));
@@ -228,16 +228,10 @@ It contains the following components:
       Placement(visible = true, transformation(origin = {0, 78}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
     PowerSystems.AC3ph.Nodes.BusBar bus3 annotation(
       Placement(visible = true, transformation(origin = {0, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  PowerSystems.AC3ph.Sources.PVsource PVsource1(S_nom = 1.5e+09, V_nom = 400000, p0 = 2e6, v0 = 6600)  annotation(
-      Placement(visible = true, transformation(origin = {-210, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   PowerSystems.AC3ph.Nodes.GroundOne grd1 annotation(
       Placement(visible = true, transformation(origin = {-240, -10}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   PowerSystems.AC3ph.Nodes.GroundOne grd3 annotation(
       Placement(visible = true, transformation(origin = {0, 154}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  PowerSystems.AC3ph.Sources.PVsource PVsource3(S_nom = 1.5e+09, V_nom = 400000, p0 = 1e6, v0 = 6600)  annotation(
-      Placement(visible = true, transformation(origin = {0, 114}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  PowerSystems.AC3ph.Sources.PVsource PVsource2(S_nom = 1.5e+09, V_nom = 400000, p0 = 2e6, v0 = 6600)  annotation(
-      Placement(visible = true, transformation(origin = {218, -10}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   PowerSystems.AC3ph.Nodes.GroundOne grd2 annotation(
       Placement(visible = true, transformation(origin = {248, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   PowerSystems.AC3ph.Lines.PIline line1(len = 10000)  annotation(
@@ -266,7 +260,37 @@ It contains the following components:
       Placement(visible = true, transformation(origin = {-54, -36}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   PowerSystems.AC3ph.Sensors.PVImeter PVImeter3 annotation(
       Placement(visible = true, transformation(origin = {0, -24}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  PowerSystems.AC3ph.Sources.InfBus infBus annotation(
+      Placement(visible = true, transformation(origin = {-212, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  PowerSystems.AC3ph.Sources.InfBus infBus1 annotation(
+      Placement(visible = true, transformation(origin = {218, -10}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  PowerSystems.AC3ph.Sources.InfBus infBus2 annotation(
+      Placement(visible = true, transformation(origin = {2, 122}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  PowerSystems.Blocks.Signals.TransientPhasor transPh1 annotation(
+      Placement(visible = true, transformation(origin = {-234, 24}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  PowerSystems.Blocks.Signals.TransientPhasor transPh11 annotation(
+      Placement(visible = true, transformation(origin = {222, 34}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  PowerSystems.Blocks.Signals.TransientPhasor transPh12 annotation(
+      Placement(visible = true, transformation(origin = {44, 128}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   equation
+    connect(transPh11.y, infBus1.vPhasor_in) annotation(
+      Line(points = {{212, 34}, {212, 34}, {212, 0}, {212, 0}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(transPh1.y, infBus.vPhasor_in) annotation(
+      Line(points = {{-224, 24}, {-206, 24}, {-206, 0}, {-206, 0}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(transPh12.y, infBus2.vPhasor_in) annotation(
+      Line(points = {{34, 128}, {12, 128}, {12, 116}, {12, 116}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(infBus2.term, trafo3.term_p) annotation(
+      Line(points = {{2, 112}, {0, 112}, {0, 88}, {0, 88}}, color = {0, 120, 120}));
+    connect(grd3.term, infBus2.neutral) annotation(
+      Line(points = {{0, 144}, {2, 144}, {2, 132}, {2, 132}}, color = {0, 0, 255}));
+    connect(infBus1.term, trafo2.term_p) annotation(
+      Line(points = {{208, -10}, {196, -10}, {196, -10}, {196, -10}}, color = {0, 120, 120}));
+    connect(grd2.term, infBus1.neutral) annotation(
+      Line(points = {{238, -10}, {228, -10}, {228, -10}, {228, -10}}, color = {0, 0, 255}));
+    connect(grd1.term, infBus.neutral) annotation(
+      Line(points = {{-230, -10}, {-222, -10}, {-222, -10}, {-222, -10}}, color = {0, 0, 255}));
+    connect(infBus.term, trafo1.term_p) annotation(
+      Line(points = {{-202, -10}, {-194, -10}, {-194, -10}, {-194, -10}}, color = {0, 120, 120}));
     connect(PVImeter3.term_n, bus4.term) annotation(
       Line(points = {{0, -34}, {0, -34}, {0, -66}, {2, -66}}, color = {0, 120, 120}));
     connect(line3.term_n, PVImeter3.term_p) annotation(
@@ -303,18 +327,6 @@ It contains the following components:
       Line(points = {{-132, -10}, {-96, -10}, {-96, -10}, {-96, -10}}, color = {0, 120, 120}));
     connect(sensor3.term_n, line3.term_p) annotation(
       Line(points = {{0, 30}, {0, 30}, {0, 20}, {0, 20}}, color = {0, 120, 120}));
-    connect(PVsource2.term, trafo2.term_p) annotation(
-      Line(points = {{208, -10}, {196, -10}, {196, -10}, {196, -10}}, color = {0, 120, 120}));
-    connect(PVsource2.neutral, grd2.term) annotation(
-      Line(points = {{228, -10}, {238, -10}, {238, -10}, {238, -10}}, color = {0, 0, 255}));
-    connect(grd3.term, PVsource3.neutral) annotation(
-      Line(points = {{0, 144}, {0, 144}, {0, 124}, {0, 124}}, color = {0, 0, 255}));
-    connect(PVsource3.term, trafo3.term_p) annotation(
-      Line(points = {{0, 104}, {0, 104}, {0, 88}, {0, 88}}, color = {0, 120, 120}));
-    connect(PVsource1.term, trafo1.term_p) annotation(
-      Line(points = {{-200, -10}, {-194, -10}, {-194, -10}, {-194, -10}}, color = {0, 120, 120}));
-    connect(grd1.term, PVsource1.neutral) annotation(
-      Line(points = {{-230, -10}, {-220, -10}, {-220, -10}, {-220, -10}}, color = {0, 0, 255}));
     connect(trafo2.term_n, bus2.term) annotation(
       Line(points = {{176, -10}, {164, -10}, {164, -10}, {164, -10}}, color = {0, 120, 120}));
     connect(bus2.term, sensor2.term_p) annotation(
@@ -333,6 +345,11 @@ It contains the following components:
       Icon(coordinateSystem(extent = {{-250, -200}, {250, 200}})),
       __OpenModelica_commandLineOptions = "");
   end Submodel3ph;
+
+
+
+
+
 
 
 
